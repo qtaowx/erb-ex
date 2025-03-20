@@ -31,4 +31,5 @@ async function addToCart(productId, quantity) {
 // Example usage
 await addToCart(1, 2); // Add 2 laptops to the cart
 await addToCart(2, 1); // Add 1 smartphone to the cart
+await addToCart(1, 1); // Updated 1 of Laptop to the cart
 await addToCart(3, 1); // Attempt to add 1 wireless headphone (out of stock)

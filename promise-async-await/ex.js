@@ -15,6 +15,7 @@ fetchProductDataById(-1)
     console.log(res);
 })
 .catch(err =>{
+    console.log("------- Ex 1 ----------")
     console.error(err);
 })
 
@@ -47,6 +48,7 @@ function fetchProducts(arr){
     }
     return Promise.all(promises)
     .then(res => {
+        console.log("------- Ex 2 ----------")
         console.log(...res);
     })
     .catch(err => {
@@ -86,6 +88,7 @@ function updateProductInventory(productId, quantity) {
 
 updateProductInventory(2, 5)
 .then((msg) => {
+    console.log("------- Ex 3 ----------")
     console.log(msg);
     console.log(inventory);
 })
@@ -114,6 +117,7 @@ function fetchUserData(userId) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             if(userId < 1){
+                console.log("------- Ex 4 ----------")
                 reject("Invalid user ID");
                 return;
             }
@@ -173,6 +177,7 @@ function fetchProdData(prodId) {
 async function getProduct(prodId){
     try{
         const data = await fetchProdData(prodId);
+        console.log("------- Ex 5 ----------")
         console.log(data);
     }catch(error){
         console.error(error);
@@ -200,9 +205,10 @@ async function addToCart(productId, quantity) {
             console.error(`Not enough stock for product ID ${productId}. Only ${product.inStock} available.`);
             return;
         }
-        const cartItem = cart.find(item => item.id === productId);
+        const cartItem = cart.find(item => item.productId === productId);
         if(!cartItem){
             cart.push({productId, quantity});
+            console.log("------- Ex 6 ----------")
             console.log(`Added ${quantity} of ${product.name} to cart.`);
         }else{
             cartItem.quantity += quantity;
@@ -216,4 +222,90 @@ async function addToCart(productId, quantity) {
 
 await addToCart(1, 2);
 await addToCart(1, 1);
+await addToCart(2, 1);
 await addToCart(3, 1);
+
+// Exercise 7: View Cart
+const productsv = [
+    { id: 1, name: "Laptop", price: 999.99, inStock: 10 },
+    { id: 2, name: "Smartphone", price: 699.99, inStock: 5 },
+    { id: 3, name: "Wireless Headphones", price: 199.99, inStock: 0 },
+];
+
+const cartv = [
+    { productId: 1, quantity: 1 },
+    { productId: 2, quantity: 2 },
+    { productId: 3, quantity: 1 },
+];
+
+async function viewCart() {
+    let total = 0;
+    cartv.forEach(product => {
+       let name = productsv.find(p => p.id === product.productId).name;
+       let price = productsv.find(p => p.id === product.productId).price;
+       let quantity = product.quantity;
+       let cost = price * quantity;
+       total += cost;
+       console.log("------- Ex 7 ----------")
+       console.log(`name:${name} quantity: ${quantity}, total price: $${cost.toFixed(2)}`);
+    })
+    console.log("Total cost:", total);
+}
+
+await viewCart();
+
+// Exercise 8: Mock Payment Function
+async function processPayment(totalAmount){
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if(totalAmount < 0){
+                reject("Invalid payment amount");
+                return;
+            }
+            console.log("------- Ex 8 ----------")
+            resolve(`Payment of ${totalAmount.toFixed(2)} processed successfully.`)
+        },1000);
+    });
+}
+
+// let msg = await processPayment(100);
+
+// console.log("msg:",msg);
+
+// use LIFE
+(async () => {
+    const messgae = await processPayment(150.7);
+    console.log("message:", messgae);
+})();
+
+// Exercise 9: Sequential Fetch with Controlled Flow
+const productsList =[
+    { id: 1, name: "Laptop", price: 999.99},
+    { id: 2, name: "Smartphone", price: 699.99},
+    { id: 3, name: "Wireless Headphones", price: 199.99},
+    { id: 4, name: "Mouse", price: 49.99},
+    { id: 5, name: "Keyboard", price: 99.99}
+]
+async function fetchProductsSequentially(productIds) {
+    for(let productId of productIds){
+        await delay(1000); // 程序会等待1秒再向下执行,await的外部环境必须是async
+        console.log("------- Ex 9 ----------")
+        let product = productsList.find(p => p.id === productId);
+        if(!product){
+            console.error(`Product ID ${productId} not found.`);
+            continue; // 本次循环执行到此为止，继续下一次循环
+        }
+        console.log(`Fetched product ID: ${productId} with name: ${product.name}`);
+    }
+}
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+fetchProductsSequentially([1,2,3,6,5]);
+
+// teacher's
+// fetchProductsSequentially([1,2,3,6,5]).then((products) =>{
+//     // ....
+// })
