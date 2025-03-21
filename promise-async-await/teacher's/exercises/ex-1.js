@@ -20,3 +20,9 @@ fetchProductData(1).then(product => {
 }).catch(error => {
     console.log(error);
 });
+
+fetchProductData(-1).then(product => {
+    console.log('Fetched product:', product);
+}).catch(error => {
+    console.log(error);
+});

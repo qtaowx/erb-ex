@@ -42,3 +42,4 @@ function fetchProducts(productIds) {
 fetchProducts([1, 2, 0, 3]).then(products => {
     console.log('Successfully fetched products:', products);
 });
+

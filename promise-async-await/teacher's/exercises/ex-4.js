@@ -5,7 +5,7 @@ function fetchUserData(userId) {
             if (userId < 1) {
                 reject(new Error("Invalid user ID.")); // Reject if invalid
             } else {
-                console.log(`Fetched user data for user ID: ${userId}`);
+                console.log(`User ID: ${userId}`);
                 resolve({ id: userId, name: "John Doe" }); // Resolve with user data
             }
         }, 1000); // Simulate a 1-second delay
@@ -19,7 +19,7 @@ function fetchUserPosts(userId) {
             if (userId < 1) {
                 reject(new Error("Invalid user ID.")); // Reject if invalid
             } else {
-                console.log(`Fetched posts for user ID: ${userId}`);
+                console.log(`User ID: ${userId}`);
                 resolve([
                     { postId: 1, content: "Hello World!" },
                     { postId: 2, content: "Learning JavaScript!" }
@@ -42,10 +42,20 @@ async function fetchUserDetails(userId) {
         console.log(`User Posts:`, userPosts);
     } catch (error) {
         // Catch and log any errors that occur during fetching
-        console.log(`Error fetching user details: ${error.message}`);
+        console.log(`Error: ${error.message}`);
     }
 }
 
 // Example usage
 fetchUserDetails(1);  // Valid user ID
 fetchUserDetails(-1); // Invalid user ID
+
+// Output:
+// User ID: 1
+// Error: Invalid user ID.
+// User ID: 1
+// User Data: { id: 1, name: 'John Doe' }
+// User Posts: [
+//   { postId: 1, content: 'Hello World!' },
+//   { postId: 2, content: 'Learning JavaScript!' }
+// ]
