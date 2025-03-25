@@ -88,14 +88,8 @@ let obj3 = {}
 let totalrating = 0;
 let reviewcount = {};
 let averagedata = {};
-let reviewInfo = {
-    id: '',
-    count:0,
-    ratingsum:0
-}
 reviews.forEach(review => {
-    if(reviewInfo)
-    reviewInfo[review.productId] += 1;
+    reviewcount[review.productId] += 1;
     console.log(review)
     review.reviews.forEach(item =>{
         console.log(item)
@@ -112,4 +106,3 @@ reviews.forEach(review => {
 })
 
 console.log(obj3);
-
