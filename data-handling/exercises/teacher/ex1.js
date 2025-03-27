@@ -36,3 +36,6 @@ console.log(flattenCategories(categories));
 //     'Refrigerators',
 //     'Washing Machines'
 //   ]
+
+
+// fix issue 02 codes
