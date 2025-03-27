@@ -3,14 +3,17 @@ console.log("Full pool: ");
 console.log(pool);
 
 let ret = [];
-let count = 0;
 let timer = setInterval(function(){
+    // get a random index of 0 to 48
     let i = Math.floor(Math.random() * pool.length);
+    // log the drawn number
     console.log("Number drawn: " + pool[i]);
+    // add the number to the result array
     ret.push(pool[i]);
-    count++;
+    // remove the number from the pool
     pool.splice(i, 1);
-    if(count === 7){
+    // check if all numbers have been drawn
+    if(ret.length === 7){
         clearInterval(timer);
         console.log("Result: ");
         console.log(ret);

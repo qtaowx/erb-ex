@@ -10,106 +10,67 @@
 // 如何用postman做debug
 // https://blog.csdn.net/K346K346/article/details/112354614
 
-// const orders = [
-//     { customerId: 1, amount: 250 },
-//     { customerId: 2, amount: 150 },
-//     { customerId: 1, amount: 200 },
-//     { customerId: 3, amount: 300 }
-// ];
+// Exercise 1: Design a REST API for an Online Bookstore
+// 1. Books
+// 	CRUD Operations:
+// 	Create: Add a new book.
+// 	Read:
+// 	Retrieve all books.
+// 	Retrieve a specific book by ID.
+// 	Update: Modify an existing book by ID.
+// 	Delete: Remove a book by ID.
 
-// let obj = {};
-// orders.forEach(order => {
-//     if(obj[order.customerId]){
-//         obj[order.customerId] += order.amount;
-//     }else{
-//         obj[order.customerId] = order.amount;
-//     }
-// });
+POST /api/books
+GET /api/books
+GET /api/books/:id
+PUT /api/books/:id
+DELETE /api/books/:id
 
-// console.log(obj);
+// 2. Authors
+// 	CRUD Operations:
+// 	Create: Add a new author.
+// 	Read:
+// 	Retrieve all authors.
+// 	Retrieve a specific author by ID.
+// 	Update: Modify an existing author by ID.
+// 	Delete: Remove an author by ID.
 
-// Retrieve Unique Products IDs
-const orders = [
-    { products: [1, 2, 3] },
-    { products: [2, 4] },
-    { products: [1, 5] }
-];
+POST /api/authors
+GET /api/authors
+GET /api/authors/:id
+PUT /api/authors/:id
+DELETE /api/authors/:id
 
-let arr = [];
-orders.forEach(order => {
-    order.products.forEach(id =>{
-        if(!arr.includes(id)){ // includes()方法返回布尔值，表示是否找到了在数组中指定的元素。
-            arr.push(id);
-        }
-    });
-})
-console.log(arr);
+// 3. Categories
+// 	CRUD Operations:
+// 	Create: Add a new category.
+// 	Read:
+// 	Retrieve all categories.
+// 	Retrieve a specific category by ID.
+// 	Update: Modify an existing category by ID.
+// 	Delete: Remove a category by ID.
 
-// Or use Set
-let set = new Set();
-orders.forEach(order => {
-    order.products.forEach(id =>{
-        set.add(id);
-    });
-})
+POST /api/categories
+GET /api/categories
+GET /api/categories/:id
+PUT /api/categories/:id
+DELETE /api/categories/:id
 
-console.log([...set]);
-
-const orders2 = [
-    { customerId: 1, orderDetails: [{ items: [{ productId: 101, amount: 50 }, { productId: 102, amount: 150 }] }] },
-    { customerId: 2, orderDetails: [{ items: [{ productId: 103, amount: 200 }] }] },
-    { customerId: 1, orderDetails: [{ items: [{ productId: 101, amount: 100 }] }] },
-    { customerId: 3, orderDetails: [{ items: [{ productId: 104, amount: 300 }, { productId: 105, amount: 150 }] }] }
-];
-
-let obj2 = {};
-
-
-orders2.forEach(order => {
-    obj2[order.customerId] = obj2[order.customerId] || 0; // 保证obj2[order.customerId]存在，初始值为0
-    obj2[order.customerId] += order.orderDetails[0].items.reduce((sum, item) => sum + item.amount, 0);
-    // if(!obj2[order.customerId]){
-    //     obj2[order.customerId] = order.orderDetails[0].items.reduce((sum, item) => sum + item.amount, 0);
-    // }else{
-    //     obj2[order.customerId] += order.orderDetails[0].items.reduce((sum, item) => sum + item.amount, 0);
-    // }
-});
-
-console.log(obj2);
-
-const reviews = [
-    { productId: 101, reviews: [{ rating: 5, comment: "Excellent" }, { rating: 4, comment: "Very Good" }] },
-    { productId: 102, reviews: [{ rating: 3, comment: "Average" }, { rating: 3, comment: "Average" }] },
-    { productId: 101, reviews: [{ rating: 4, comment: "Very Good" }] },
-    { productId: 103, reviews: [{ rating: 5, comment: "Excellent" }] }
-];
-
-let obj3 = {}
-let totalrating = 0;
-let reviewcount = {};
-let averagedata = {};
-let reviewInfo = {
-    id: '',
-    count:0,
-    ratingsum:0
-}
-reviews.forEach(review => {
-    if(reviewInfo)
-    reviewInfo[review.productId] += 1;
-    console.log(review)
-    review.reviews.forEach(item =>{
-        console.log(item)
-        totalrating += item.rating
+// 4. Reviews
+// 	CRUD Operations:
+// 	Create: Add a new review for a specific book.
+// 	Read:
+// 	Retrieve all reviews for a specific book.
+// 	Retrieve a specific review by ID.
+// 	Update: Modify an existing review by ID.
+// 	Delete: Remove a review by ID.
 
 
+POST /api/reviews
+GET /api/reviews
+GET /api/reviews/:id
+PUT /api/reviews/:id
+DELETE /api/reviews/:id
 
-        obj3[review.productId] = {
-            averageRating: totalrating/reviewcount[review.productId],
-            totalReviews: reviewcount,
-            mostFrequentComment: item.comment
-        }
-    })
-})
-
-console.log(obj3);
-
+POST    /api/reviews?book_id=:id
+POST    /api/books/:id/reviews
