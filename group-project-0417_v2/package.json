@@ -1,0 +1,19 @@
+{
+  "name": "group-project-0416_v1",
+  "version": "1.0.0",
+  "description": "這是一個使用 Node.js + Express + MongoDB 實作的簡易用戶註冊 / 登入 / 個人事件管理系統。每位註冊用戶可擁有個人資料、頭像上傳、個人日曆頁面，頭像圖片並儲存至 MongoDB, 並可使用 FullCalendar.js 管理事件。",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "fullcalendar": "^6.1.17",
+    "mongoose": "^8.13.2",
+    "multer": "^1.4.5-lts.2"
+  }
+}

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FullCalendar CRUD</title>
+
+    <!-- FullCalendar v6 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body{
+        background-image: url('images/home_bg.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+      }
+      #calendar {
+        width: 48%;
+        margin: 40px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      #userInfo {
+        display: inline-block;
+        text-align: right;
+        margin-right: 20px;
+        margin-left: 10px;
+      }
+      #icon-picture {
+        display: inline-block;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+      }
+      .navbar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: transparent;
+        color: white;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+      }
+      .user-info span {
+        margin-right: 10px;
+      }
+      .logout-btn {
+        padding: 5px 10px;
+        background-color: #1597cd;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .bigtitle{
+        font-size: 36px;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-100 p-4">
+    <div class="navbar">
+      <div class="user-info">
+        <img id="icon-picture" />
+        <span id="userInfo"></span>
+      </div>
+      <button class="logout-btn" onclick="logout()">Log Out</button>
+    </div>
+
+    <h1 class="text-2xl font-semibold text-center mb-6 bigtitle">User Calendar System</h1>
+    <div id="calendar"></div>
+
+    <!-- Modal -->
+    <div
+      id="eventModal"
+      class="hidden fixed inset-0 z-50 flex justify-center items-center bg-gray-500 bg-opacity-50"
+    >
+      <div class="bg-white p-4 rounded-md shadow-lg w-96 z-50 relative">
+        <h2 class="text-xl font-semibold mb-4" id="modalTitle">Add Event</h2>
+        <form id="eventForm">
+          <input
+            type="text"
+            id="eventTitle"
+            class="w-full mb-4 p-2 border border-gray-300 rounded"
+            placeholder="Event Title"
+            required
+          />
+          <textarea
+            id="eventDescription"
+            class="w-full mb-4 p-2 border border-gray-300 rounded"
+            placeholder="Event Description"
+          ></textarea>
+          <button
+            type="submit"
+            class="bg-blue-500 text-white px-4 py-2 rounded w-full"
+            id="submitBtn"
+          >
+            Save Event
+          </button>
+          <button
+            type="button"
+            class="mt-2 w-full bg-red-500 text-white px-4 py-2 rounded"
+            onclick="closeModal()"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="mt-2 w-full bg-yellow-500 text-white px-4 py-2 rounded"
+            onclick="deleteEvent()"
+            id="deleteBtn"
+            style="display: none"
+          >
+            Delete Event
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- FullCalendar -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+  let currentEventId = null;
+  let calendar;
+  let userId;
+
+  window.onload = async function () {
+  const uid = new URLSearchParams(window.location.search).get("uid");
+
+  if (!uid) {
+    console.error("URL 中未包含 uid");
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/users/${uid}`);
+    if (!response.ok) {
+      throw new Error("無法取得使用者資訊");
+    }
+
+    const userInfo = await response.json();
+
+    if (!userInfo || !userInfo._id) {
+      throw new Error("回傳使用者資料不正確");
+    }
+    userId = userInfo._id; 
+    document.getElementById("userInfo").innerText = userInfo.name;
+    document.getElementById("icon-picture").src = `/api/users/avatar/${userInfo._id}`;
+  } catch (error) {
+    console.error("載入使用者資訊時出錯：", error);
+  }
+};
+
+
+      function logout() {
+        window.location.href = "/login.html";
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const calendarEl = document.getElementById("calendar");
+        const currentUrl = window.location.href;
+        const parts = currentUrl.split("=");
+        let uid = parts.length > 1 ? parts[1] : "";
+        calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: "dayGridMonth",
+          selectable: true,
+          editable: true,
+          eventSources: [
+            {
+              url: "/api/events",
+              method: "GET",
+              failure: function () {
+                alert("There was an error while fetching events!");
+              },
+              extraParams: function () {
+                return {
+                  cachebuster: new Date().valueOf(),
+                  userid: uid,
+                };
+              },
+            },
+          ],
+          select: function (info) {
+            openModal(info.startStr, info.endStr);
+          },
+          eventClick: function (info) {
+            openModal(info.event.startStr, info.event.endStr, info.event);
+          },
+        });
+
+        calendar.render();
+
+        document
+          .getElementById("eventForm")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const title = document.getElementById("eventTitle").value;
+            const description =
+              document.getElementById("eventDescription").value;
+            const start = this.dataset.start;
+            const end = this.dataset.end;
+            const userid = userId;
+
+            const eventData = {
+              title,
+              start,
+              end,
+              description,
+              userid,
+              allDay: true,
+            };
+
+            if (currentEventId) {
+              fetch(`/api/events/${currentEventId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(eventData),
+              }).then(() => {
+                calendar.refetchEvents();
+                closeModal();
+              });
+            } else {
+              fetch("/api/events", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(eventData),
+              }).then(() => {
+                calendar.refetchEvents();
+                closeModal();
+              });
+            }
+          });
+
+        document
+          .getElementById("deleteBtn")
+          .addEventListener("click", function () {
+            if (!currentEventId) return;
+
+            fetch(`/api/events/${currentEventId}`, {
+              method: "DELETE",
+            }).then(() => {
+              calendar.refetchEvents();
+              closeModal();
+            });
+          });
+      });
+
+      function openModal(start, end, event = null) {
+        const modal = document.getElementById("eventModal");
+        modal.classList.remove("hidden");
+
+        const form = document.getElementById("eventForm");
+        form.dataset.start = start;
+        form.dataset.end = end || start;
+
+        if (event) {
+          document.getElementById("modalTitle").innerText = "Edit Event";
+          document.getElementById("eventTitle").value = event.title;
+          document.getElementById("eventDescription").value =
+            event.extendedProps.description || "";
+          currentEventId = event.id;
+          document.getElementById("submitBtn").innerText = "Update Event";
+          document.getElementById("deleteBtn").style.display = "block";
+        } else {
+          document.getElementById("modalTitle").innerText = "Add Event";
+          document.getElementById("eventTitle").value = "";
+          document.getElementById("eventDescription").value = "";
+          currentEventId = null;
+          document.getElementById("submitBtn").innerText = "Save Event";
+          document.getElementById("deleteBtn").style.display = "none";
+        }
+      }
+
+      function closeModal() {
+        document.getElementById("eventModal").classList.add("hidden");
+        document.getElementById("eventForm").reset();
+      }
+    </script>
+  </body>
+</html>
